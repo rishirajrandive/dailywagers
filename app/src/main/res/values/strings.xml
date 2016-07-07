@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Daily Wagers</string>
+    <string name="today">Today</string>
+
+    <string name="error_message">Cannot be left blank</string>
+
+    <string name="date_range_msg">Allow custom date range:</string>
+    <string name="amount_for_month_label">Amount for current month:</string>
+    <string name="rate_for_the_day">Rate for the day:</string>
+
+    <string name="profile_msg">Please fill in details:</string>
+    <string name="wager_name">Name</string>
+    <string name="wager_rate">Rate</string>
+    <string name="start_date">dd-mm-yyyy</string>
+    <string name="days_of_week">Days of week</string>
+    <string name="save_button">Save</string>
+</resources>
