@@ -9,7 +9,7 @@ public class WagerConstants {
     public static final String ORIGINAL_RATE = "ratePerDay";
     public static final String START_DATE = "startDate";
     public static final String CURRENCY = "currency";
-    public static final String DAYS_OF_WEEK = "daysOfWeek";
+    public static final String EXCLUDED_DAYS_OF_WEEK = "excludedDaysOfWeek";
     public static final String CHANGED_RATE = "changedRate";
     public static final String ABSENT_DATES = "absentDates";
 }

@@ -1,5 +1,6 @@
 package com.rishi.dailywagers;
 
+import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -29,6 +30,7 @@ import com.prolificinteractive.materialcalendarview.OnMonthChangedListener;
 import com.prolificinteractive.materialcalendarview.OnRangeSelectedListener;
 import com.rishi.dailywagers.data.DailyWagerDbHelper;
 import com.rishi.dailywagers.decorators.AbsentDecorator;
+import com.rishi.dailywagers.decorators.ExcludedDayDecorator;
 import com.rishi.dailywagers.decorators.TodayDecorator;
 import com.rishi.dailywagers.decorators.WeekendDecorator;
 import com.rishi.dailywagers.model.Wager;
@@ -50,14 +52,14 @@ public class CheckFragment extends Fragment implements OnDateSelectedListener, O
 
     private static final String ARG_WAGER_ID = "wagerId";
 
+    private ProgressDialog mProgressDialog;
 
     private Wager mWager;
-    private List<CalendarDay> mAbsentDates;
-    private Map<CalendarDay, Double> mChangedRates;
     private CalendarDay mSelectedDay;
     private CalendarDay mToday;
-    private List<CalendarDay> mSelectedDateRange;
+    private int mSelectedMonth;
 
+    private List<CalendarDay> mSelectedDateRange;
     private MaterialCalendarView mCalendarView;
     private TextView mDueMonthAmount;
     private EditText mRateForTheDay;
@@ -90,8 +92,7 @@ public class CheckFragment extends Fragment implements OnDateSelectedListener, O
         mWager = DailyWagerDbHelper.getInstance(getContext()).getCurrentWager(wagerId);
         mToday = DateUtil.getCalendarDay(DateUtil.getCurrentDisplayDate());
         mSelectedDay = mToday;
-        mAbsentDates = mWager.getAbsentDates();
-        mChangedRates = mWager.getChangedRate();
+        mSelectedMonth = mToday.getMonth();
 
         Log.d(TAG, "On create " + mWager.getName());
     }
@@ -106,6 +107,7 @@ public class CheckFragment extends Fragment implements OnDateSelectedListener, O
         ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(mWager.getName());
 
+        getActivity().findViewById(R.id.add_new_wager).setVisibility(View.GONE);
         mCalendarView = (MaterialCalendarView) view.findViewById(R.id.calendarView);
         mDueMonthAmount = (TextView) view.findViewById(R.id.due_amount);
         mRateForTheDay = (EditText) view.findViewById(R.id.edit_rate_of_day);
@@ -132,34 +134,47 @@ public class CheckFragment extends Fragment implements OnDateSelectedListener, O
 
         mCustomDates.setOnCheckedChangeListener(this);
 
-        mCalendarView.addDecorators(new TodayDecorator(), new WeekendDecorator(), new AbsentDecorator(mAbsentDates));
+        mCalendarView.addDecorators(new TodayDecorator(), new WeekendDecorator(),
+                new AbsentDecorator(mWager.getAbsentDates()), new ExcludedDayDecorator(mWager.getExcludedDaysOfWeeks()));
         //mCalendarView.invalidateDecorators();
 
-        updateAmountForMonth(mToday.getMonth());
+        //updateAmountForMonth();
         updateDataForDay();
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.d(TAG, "ON start for the app");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "On resume for the app");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if(mProgressDialog != null){
+            mProgressDialog.dismiss();
+        }
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         Log.d(TAG, "Menu creation");
-        inflater.inflate(R.menu.fragment_menu, menu);
+        inflater.inflate(R.menu.fragment_check_menu, menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
-            case R.id.edit_amount:
-                Fragment fragment = new UpdateFragment();
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                if(fragmentManager.findFragmentByTag(UpdateFragment.TAG) == null){
-                    fragmentManager.beginTransaction()
-                            .replace(R.id.fragment_layout, fragment, UpdateFragment.TAG).addToBackStack(UpdateFragment.TAG).commit();
-                }else {
-                    fragmentManager.beginTransaction()
-                            .replace(R.id.fragment_layout, fragment, UpdateFragment.TAG).commit();
-                }
+            case R.id.edit_profile:
+                AbstractFragmentActivity.updateFragment(ProfileFragment.getFragment(mWager.getId()), ProfileFragment.TAG, getActivity().getSupportFragmentManager());
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -186,16 +201,18 @@ public class CheckFragment extends Fragment implements OnDateSelectedListener, O
         Log.d(TAG, "Month changed "+ date.toString() + " " + date.getMonth());
         //TODO Reset the amount shown to current month total
         Calendar cal = date.getCalendar();
-        Log.d(TAG, "Days in month "+ cal.getActualMaximum(Calendar.DAY_OF_MONTH));
-        updateAmountForMonth(date.getMonth());
+        mSelectedMonth = date.getMonth();
+        updateAmountForMonth();
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.edit_done:
+                Map<CalendarDay, Double> changedRate = mWager.getChangedRate();
                 Double newRate = Double.parseDouble(mRateForTheDay.getText().toString());
-                mChangedRates.put(mSelectedDay, newRate);
+                changedRate.put(mSelectedDay, newRate);
+                mWager.setChangedRate(changedRate);
                 enableRateEdit(false);
                 break;
             case R.id.edit_cancel:
@@ -206,29 +223,34 @@ public class CheckFragment extends Fragment implements OnDateSelectedListener, O
                 break;
             case R.id.day_attendance:
                 toggleSaveButton(true);
-                if(mDayAttendance.isChecked() && mAbsentDates.indexOf(mSelectedDay) != -1){
-                    mAbsentDates.remove(mAbsentDates.indexOf(mSelectedDay));
-                }else if(mAbsentDates.indexOf(mSelectedDay) == -1){
-                    mAbsentDates.add(mSelectedDay);
+                List<CalendarDay> absentDates = mWager.getAbsentDates();
+                if(mDayAttendance.isChecked() && absentDates.indexOf(mSelectedDay) != -1){
+                    absentDates.remove(absentDates.indexOf(mSelectedDay));
+                }else if(absentDates.indexOf(mSelectedDay) == -1){
+                    absentDates.add(mSelectedDay);
                 }
+                mWager.setAbsentDates(absentDates);
                 break;
             case R.id.range_attendance:
                 toggleSaveButton(true);
                 updateAbsentDates();
                 break;
             case R.id.save_changes:
+                showProgressDialog("Saving data...");
                 new AsyncTask<Void, Void, Boolean>() {
                     @Override
                     protected Boolean doInBackground(Void... params) {
-                        return DailyWagerDbHelper.getInstance(getContext()).updateData(mWager);
+                        return DailyWagerDbHelper.getInstance(getContext()).saveWager(mWager);
                     }
 
                     @Override
                     protected void onPostExecute(Boolean aBoolean) {
                         super.onPostExecute(aBoolean);
+                        hideProgressDialog();
                         if(aBoolean){
                             sDataSaved = true;
                             mCalendarView.invalidateDecorators();
+                            updateAmountForMonth();
                             toggleSaveButton(false);
                             Toast.makeText(getActivity(), "Data updated successfully", Toast.LENGTH_SHORT).show();
                         }else {
@@ -249,39 +271,45 @@ public class CheckFragment extends Fragment implements OnDateSelectedListener, O
         }
     }
 
-    private void updateAmountForMonth(int currentMonth){
-        int totalDays = 0;
-        if(mToday.getMonth() == currentMonth){
-            totalDays = DateUtil.getDaysUsingEndDate(mToday);
-        }else if(currentMonth == DateUtil.getCalendarDay(mWager.getStartDate()).getMonth()){
-            totalDays = DateUtil.getDaysUsingStartDate(DateUtil.getCalendarDay(mWager.getStartDate()));
+    private void updateAmountForMonth(){
+        Log.d(TAG, "Updating amount for month");
+        int totalDays;
+        if(mToday.getMonth() == mSelectedMonth){
+            totalDays = DateUtil.getDaysUsingEndDate(mToday, mWager.getExcludedDaysOfWeeks());
+        }else if(mSelectedMonth == DateUtil.getCalendarDay(mWager.getStartDate()).getMonth()){
+            totalDays = DateUtil.getDaysUsingStartDate(DateUtil.getCalendarDay(mWager.getStartDate()), mWager.getExcludedDaysOfWeeks());
         }else {
-            totalDays = mSelectedDay.getCalendar().getActualMaximum(Calendar.DAY_OF_MONTH);
+            totalDays = DateUtil.getDaysInMonth(mSelectedMonth, mWager.getExcludedDaysOfWeeks());
         }
-        totalDays = totalDays - (getAbsentDays(currentMonth) + getChangedRateDays(currentMonth));
-        double totalAmount = (totalDays * mWager.getRate()) + getChangedRateTotal(currentMonth);
+
+        totalDays = totalDays - (getAbsentDays() + getChangedRateDays());
+        double totalAmount = (totalDays * mWager.getRate()) + getChangedRateTotal();
         mDueMonthAmount.setText(totalAmount + "");
     }
 
     private void updateAbsentDates(){
+        Log.d(TAG, "Get absent dates");
+        List<CalendarDay> absentDates = mWager.getAbsentDates();
         if(mSelectedDateRange != null){
             for(CalendarDay date: mSelectedDateRange){
-                if(mAbsentDates.contains(date)){
-                    mAbsentDates.remove(mAbsentDates.indexOf(date));
+                if(absentDates.contains(date)){
+                    absentDates.remove(absentDates.indexOf(date));
                 }
             }
-            mAbsentDates.addAll(mSelectedDateRange);
+            absentDates.addAll(mSelectedDateRange);
         }else {
             Toast.makeText(getActivity(), "Select range of dates", Toast.LENGTH_SHORT).show();
         }
-
+        mWager.setAbsentDates(absentDates);
     }
 
-    private double getChangedRateTotal(int month){
+    private double getChangedRateTotal(){
+        Log.d(TAG, "Get changed rate");
+        Map<CalendarDay, Double> changedRate = mWager.getChangedRate();
         double changedRateTotal = 0;
-        for (Map.Entry<CalendarDay, Double> entry : mChangedRates.entrySet()) {
+        for (Map.Entry<CalendarDay, Double> entry : changedRate.entrySet()) {
             CalendarDay key = entry.getKey();
-            if(month == key.getMonth()){
+            if(mSelectedMonth == key.getMonth()){
                 changedRateTotal = changedRateTotal + entry.getValue();
             }
         }
@@ -333,14 +361,17 @@ public class CheckFragment extends Fragment implements OnDateSelectedListener, O
     }
 
     private void updateDataForDay(){
-        if(mAbsentDates.indexOf(mSelectedDay) != -1){
+        Log.d(TAG, "Updating for the day");
+        if(mWager.getAbsentDates().indexOf(mSelectedDay) != -1){
             mDayAttendance.setChecked(false);
         }else{
             mDayAttendance.setChecked(true);
         }
 
-        if(mChangedRates.containsKey(mSelectedDay)){
-            mRateForTheDay.setText(mChangedRates.get(mSelectedDay).toString());
+        if(mWager.getChangedRate().containsKey(mSelectedDay)){
+            mRateForTheDay.setText(mWager.getChangedRate().get(mSelectedDay).toString());
+        }else {
+            mRateForTheDay.setText(mWager.getRate()+"");
         }
     }
 
@@ -352,24 +383,39 @@ public class CheckFragment extends Fragment implements OnDateSelectedListener, O
         }
     }
 
-    private int getAbsentDays(int month){
+    private int getAbsentDays(){
         int absentDays = 0;
-        for(CalendarDay day : mAbsentDates){
-            if(day.getMonth() == month){
+        for(CalendarDay day : mWager.getAbsentDates()){
+            if(day.getMonth() == mSelectedMonth){
                 absentDays++;
             }
         }
         return absentDays;
     }
 
-    private int getChangedRateDays(int month){
+    private int getChangedRateDays(){
         int changedRateDays = 0;
-        for (Map.Entry<CalendarDay, Double> entry : mChangedRates.entrySet()) {
+        for (Map.Entry<CalendarDay, Double> entry : mWager.getChangedRate().entrySet()) {
             CalendarDay key = entry.getKey();
-            if(month == key.getMonth()){
+            if(mSelectedMonth == key.getMonth()){
                 changedRateDays++;
             }
         }
         return changedRateDays;
+    }
+
+    private void showProgressDialog(String message){
+        if(mProgressDialog == null){
+            mProgressDialog = new ProgressDialog(getContext());
+            mProgressDialog.setMessage(message);
+            mProgressDialog.setIndeterminate(true);
+        }
+        mProgressDialog.show();
+    }
+
+    private void hideProgressDialog(){
+        if(mProgressDialog != null && mProgressDialog.isShowing()){
+            mProgressDialog.hide();
+        }
     }
 }

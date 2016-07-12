@@ -24,9 +24,16 @@ public class HomeActivity extends AbstractFragmentActivity implements View.OnCli
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        //mAddNew = (FloatingActionButton) findViewById(R.id.add_new_wager);
+        mAddNew = (FloatingActionButton) findViewById(R.id.add_new_wager);
+        mAddNew.setVisibility(View.VISIBLE);
+        mAddNew.setOnClickListener(this);
+    }
 
-        //mAddNew.setOnClickListener(this);
+    @Override
+    protected void onResume() {
+        Log.d(TAG, "Resume called for HomeActivity");
+        super.onResume();
+        mAddNew.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -40,6 +47,7 @@ public class HomeActivity extends AbstractFragmentActivity implements View.OnCli
         }else {
             super.onBackPressed();
         }
+        mAddNew.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -57,5 +65,7 @@ public class HomeActivity extends AbstractFragmentActivity implements View.OnCli
     @Override
     public void onClick(View v) {
         Log.d(TAG, "Floating action button pressed");
+        mAddNew.setVisibility(View.GONE);
+        AbstractFragmentActivity.updateFragment(new ProfileFragment(), ProfileFragment.TAG, getSupportFragmentManager());
     }
 }

@@ -3,6 +3,9 @@
     <string name="today">Today</string>
 
     <string name="error_message">Cannot be left blank</string>
+    <string name="date_picker_title">Select date</string>
+    <string name="dialog_msg">All the data for wager will be deleted.</string>
+    <string name="dialog_title">Are you sure?</string>
 
     <string name="date_range_msg">Allow custom date range:</string>
     <string name="amount_for_month_label">Amount for current month:</string>

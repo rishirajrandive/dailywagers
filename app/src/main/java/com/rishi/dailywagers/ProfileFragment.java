@@ -1,35 +1,36 @@
 package com.rishi.dailywagers;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import com.rishi.dailywagers.constants.DaysOfWeek;
-import com.rishi.dailywagers.constants.WagerConstants;
+import com.rishi.dailywagers.constants.ExcludedDaysOfWeek;
 import com.rishi.dailywagers.data.DailyWagerDbHelper;
 import com.rishi.dailywagers.model.Wager;
 import com.rishi.dailywagers.util.DatePickerFragment;
 import com.rishi.dailywagers.util.DateUtil;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.rishi.dailywagers.util.IDatePickerDialogListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by rishi on 6/24/16.
@@ -37,7 +38,11 @@ import java.util.List;
 public class ProfileFragment extends Fragment implements View.OnClickListener {
 
     public static final String TAG = "ProfileFragment";
+    private static final String WAGER_ID_ARG = "wager_id";
+    private static final int REQUEST_CONFIRM_OPTION = 0;
+    private static final String DIALOG_CONFIRM = "DialogConfirm";
 
+    private boolean mIsNew = true;
     private EditText mWagerName;
     private EditText mWagerRate;
     private EditText mStartDate;
@@ -52,8 +57,16 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     private Button mSave;
 
     private Wager mWager;
-    private List<DaysOfWeek> mDaysOfWeek;
+    private List<ExcludedDaysOfWeek> mExcludedDaysOfWeeks;
 
+    public static ProfileFragment getFragment(UUID wagerId){
+        ProfileFragment fragment = new ProfileFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString(WAGER_ID_ARG, wagerId.toString());
+        fragment.setArguments(bundle);
+
+        return fragment;
+    }
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,9 +83,19 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
         ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Add new wager");
 
-        mWagerName = (EditText) view.findViewById(R.id.wager_name);
+        Bundle args = getArguments();
+        if(args != null && args.getString(WAGER_ID_ARG) != null){
+            UUID wagerId = UUID.fromString(getArguments().getString(WAGER_ID_ARG));
+            mWager = DailyWagerDbHelper.getInstance(getContext()).getCurrentWager(wagerId);
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Update "+ mWager.getName());
+            mIsNew = false;
+        }else {
+            mWager = new Wager();
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Add new wager");
+        }
+
+        mWagerName = (EditText) view.findViewById(R.id.profile_wager_name);
         mWagerRate = (EditText) view.findViewById(R.id.wager_rate);
         mStartDate = (EditText) view.findViewById(R.id.profile_start_date);
         mDatePicker = (Button) view.findViewById(R.id.profile_start_date_btn);
@@ -90,7 +113,9 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         mSave.setOnClickListener(this);
         mDatePicker.setOnClickListener(this);
 
-        mDaysOfWeek = new ArrayList<>();
+        if(mWager != null){
+            populateWagerProfile();
+        }
 
         return view;
     }
@@ -101,25 +126,73 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             case R.id.save_profile:
                 Log.d(TAG, "Save bttn clicked");
                 if(isValid()){
-                    mWager = new Wager();
-                    mWager.setName(mWagerName.getText().toString());
-                    mWager.setRate(Double.parseDouble(mWagerRate.getText().toString()));
-                    mWager.setStartDate(mStartDate.getText().toString());
-                    mWager.setDaysOfWeek(mDaysOfWeek);
+                    populateWagerData();
                     new SaveProfile().execute();
                 }
                 break;
             case R.id.profile_start_date_btn:
                 Log.d(TAG, "Select date clicked");
-                DialogFragment newFragment = new DatePickerFragment(){
+                DatePickerFragment datePickerFragment = DatePickerFragment.newInstance(getContext(), R.string.date_picker_title);
+                datePickerFragment.setDatePickerDialogListener(new IDatePickerDialogListener() {
                     @Override
-                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                        super.onDateSet(view, year, monthOfYear, dayOfMonth);
-                        mStartDate.setText(DateUtil.getDisplayDate(year, monthOfYear, dayOfMonth));
+                    public void setDate(int year, int month, int day) {
+                        mStartDate.setText(DateUtil.getDisplayDate(year, month, day));
                     }
-                };
-                newFragment.show(getActivity().getSupportFragmentManager(), "datePicker");
+                });
+                datePickerFragment.show(getActivity().getSupportFragmentManager(), "datePicker");
                 break;
+        }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        Log.d(TAG, "Menu creation");
+        if(!mIsNew){
+            inflater.inflate(R.menu.fragment_profile_menu, menu);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.delete_profile:
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                ConfirmDialog dialog = ConfirmDialog.newInstance();
+                dialog.setTargetFragment(ProfileFragment.this, REQUEST_CONFIRM_OPTION);
+
+                dialog.show(fragmentManager, DIALOG_CONFIRM);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == REQUEST_CONFIRM_OPTION){
+            if(resultCode == Activity.RESULT_OK){
+                new AsyncTask<Void, Void, Boolean>() {
+                    @Override
+                    protected Boolean doInBackground(Void... params) {
+                        return DailyWagerDbHelper.getInstance(getContext()).deleteWager(mWager.getId().toString());
+                    }
+
+                    @Override
+                    protected void onPostExecute(Boolean aBoolean) {
+                        super.onPostExecute(aBoolean);
+                        if(aBoolean){
+                            Toast.makeText(getActivity(), "Data deleted successfully", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(getContext(), HomeActivity.class);
+                            startActivity(intent);
+                            getActivity().finish();
+                        }else {
+                            Toast.makeText(getActivity(), "Something went wrong...", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }.execute();
+            }
         }
     }
 
@@ -144,42 +217,77 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     }
 
     private boolean isValidDaysOfWeek(){
-        boolean isValid = false;
-        if(mSunday.isChecked()){
-            isValid = true;
-            mDaysOfWeek.add(DaysOfWeek.SUN);
+        mExcludedDaysOfWeeks = new ArrayList<>();
+        if(!mSunday.isChecked()){
+            mExcludedDaysOfWeeks.add(ExcludedDaysOfWeek.SUN);
         }
-        if(mMonday.isChecked()){
-            isValid = true;
-            mDaysOfWeek.add(DaysOfWeek.MON);
+        if(!mMonday.isChecked()){
+            mExcludedDaysOfWeeks.add(ExcludedDaysOfWeek.MON);
         }
-        if(mTuesday.isChecked()){
-            isValid = true;
-            mDaysOfWeek.add(DaysOfWeek.TUE);
+        if(!mTuesday.isChecked()){
+            mExcludedDaysOfWeeks.add(ExcludedDaysOfWeek.TUE);
         }
-        if(mWednesday.isChecked()){
-            isValid = true;
-            mDaysOfWeek.add(DaysOfWeek.WED);
+        if(!mWednesday.isChecked()){
+            mExcludedDaysOfWeeks.add(ExcludedDaysOfWeek.WED);
         }
-        if(mThursday.isChecked()){
-            isValid = true;
-            mDaysOfWeek.add(DaysOfWeek.THU);
+        if(!mThursday.isChecked()){
+            mExcludedDaysOfWeeks.add(ExcludedDaysOfWeek.THU);
         }
-        if(mFriday.isChecked()){
-            isValid = true;
-            mDaysOfWeek.add(DaysOfWeek.FRI);
+        if(!mFriday.isChecked()){
+            mExcludedDaysOfWeeks.add(ExcludedDaysOfWeek.FRI);
         }
-        if(mSaturday.isChecked()){
-            isValid = true;
-            mDaysOfWeek.add(DaysOfWeek.SAT);
+        if(!mSaturday.isChecked()){
+            mExcludedDaysOfWeeks.add(ExcludedDaysOfWeek.SAT);
         }
-        return isValid;
+        if(mExcludedDaysOfWeeks.size() == 7){
+            return false;
+        }
+        return true;
+    }
+
+    private void populateWagerProfile(){
+        mWagerName.setText(mWager.getName());
+        mWagerRate.setText(mWager.getRate()+"");
+        mStartDate.setText(mWager.getStartDate());
+
+        for(ExcludedDaysOfWeek day : mWager.getExcludedDaysOfWeeks()){
+            switch (day){
+                case SUN:
+                    mSunday.setChecked(false);
+                    break;
+                case MON:
+                    mMonday.setChecked(false);
+                    break;
+                case TUE:
+                    mTuesday.setChecked(false);
+                    break;
+                case WED:
+                    mWednesday.setChecked(false);
+                    break;
+                case THU:
+                    mThursday.setChecked(false);
+                    break;
+                case FRI:
+                    mFriday.setChecked(false);
+                    break;
+                case SAT:
+                    mSaturday.setChecked(false);
+                    break;
+            }
+        }
+    }
+
+    private void populateWagerData(){
+        mWager.setName(mWagerName.getText().toString());
+        mWager.setRate(Double.parseDouble(mWagerRate.getText().toString()));
+        mWager.setStartDate(mStartDate.getText().toString());
+        mWager.setExcludedDaysOfWeeks(mExcludedDaysOfWeeks);
     }
 
     private class SaveProfile extends AsyncTask<Void, Void, Boolean>{
         @Override
         protected Boolean doInBackground(Void... params) {
-            return DailyWagerDbHelper.getInstance(getContext()).saveData(mWager);
+            return DailyWagerDbHelper.getInstance(getContext()).saveWager(mWager);
         }
 
         @Override

@@ -3,8 +3,6 @@ package com.rishi.dailywagers;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.TextView;
 
 import com.prolificinteractive.materialcalendarview.CalendarDay;
@@ -22,6 +19,7 @@ import com.rishi.dailywagers.data.DailyWagerDbHelper;
 import com.rishi.dailywagers.model.Wager;
 import com.rishi.dailywagers.util.DatePickerFragment;
 import com.rishi.dailywagers.util.DateUtil;
+import com.rishi.dailywagers.util.IDatePickerDialogListener;
 
 import java.util.List;
 
@@ -36,7 +34,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
     private TextView mTodayDate;
     private Button mSelectDate;
     private RecyclerView mHomeRecyclerView;
-    private FloatingActionButton mAddNew;
+    //private FloatingActionButton mAddNew;
     private TextView mNoItemsMessage;
     private List<Wager> mWagerList;
 
@@ -60,14 +58,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
 
         mTodayDate = (TextView) view.findViewById(R.id.today_date);
         mSelectDate = (Button) view.findViewById(R.id.check_date);
-        mAddNew = (FloatingActionButton) view.findViewById(R.id.add_new_wager);
+        //mAddNew = (FloatingActionButton) view.findViewById(R.id.add_new_wager);
         mHomeRecyclerView = (RecyclerView) view.findViewById(R.id.fragment_home_recycler_view);
         mNoItemsMessage = (TextView) view.findViewById(R.id.text_empty);
 
         mHomeRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mTodayDate.setText(DateUtil.getCurrentDisplayDate());
         mSelectDate.setOnClickListener(this);
-        mAddNew.setOnClickListener(this);
+        //mAddNew.setOnClickListener(this);
 
         new FetchWagers().execute();
         return view;
@@ -86,15 +84,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
         switch (v.getId()){
             case R.id.check_date:
                 Log.d(TAG, "Select date clicked");
-                DialogFragment newFragment = new DatePickerFragment(){
+
+                DatePickerFragment datePickerFragment = DatePickerFragment.newInstance(getContext(), R.string.date_picker_title);
+                datePickerFragment.setDatePickerDialogListener(new IDatePickerDialogListener() {
                     @Override
-                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                        super.onDateSet(view, year, monthOfYear, dayOfMonth);
-                        mTodayDate.setText(DateUtil.getDisplayDate(year, monthOfYear, dayOfMonth));
+                    public void setDate(int year, int month, int day) {
+                        mTodayDate.setText(DateUtil.getDisplayDate(year, month, day));
                         setupAdapter();
                     }
-                };
-                newFragment.show(getActivity().getSupportFragmentManager(), "datePicker");
+                });
+                datePickerFragment.show(getActivity().getSupportFragmentManager(), "datePicker");
                 break;
             case R.id.add_new_wager:
                 AbstractFragmentActivity.updateFragment(new ProfileFragment(), ProfileFragment.TAG, getActivity().getSupportFragmentManager());

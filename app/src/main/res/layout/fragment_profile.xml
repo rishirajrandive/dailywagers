@@ -20,7 +20,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/profile_msg"
                 />
-            <EditText android:id="@+id/wager_name"
+            <EditText android:id="@+id/profile_wager_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ems="13"
@@ -36,7 +36,7 @@
                 android:ems="13"
                 android:hint="@string/wager_rate"
                 android:inputType="numberDecimal"
-                android:layout_below="@id/wager_name"
+                android:layout_below="@id/profile_wager_name"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="25dp"
                 android:imeOptions="actionNext"/>

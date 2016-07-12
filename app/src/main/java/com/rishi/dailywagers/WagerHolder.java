@@ -89,7 +89,7 @@ public class WagerHolder extends RecyclerView.ViewHolder implements View.OnClick
     private class UpdateAttendance extends AsyncTask<Void, Void, Boolean>{
         @Override
         protected Boolean doInBackground(Void... params) {
-            return DailyWagerDbHelper.getInstance(mActivity).updateData(mWager);
+            return DailyWagerDbHelper.getInstance(mActivity).saveWager(mWager);
         }
 
         @Override

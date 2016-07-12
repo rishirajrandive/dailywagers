@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.prolificinteractive.materialcalendarview.CalendarDay;
-import com.rishi.dailywagers.constants.DaysOfWeek;
+import com.rishi.dailywagers.constants.ExcludedDaysOfWeek;
 import com.rishi.dailywagers.constants.WagerConstants;
 import com.rishi.dailywagers.data.DailyWagerContract.DailyWagerEntry;
 import com.rishi.dailywagers.model.Wager;
@@ -79,7 +79,15 @@ public class DailyWagerDbHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     }
 
-    public boolean saveData(Wager wager){
+    public boolean saveWager(Wager wager){
+        if(isWagerExists(wager.getId().toString())){
+            return updateData(wager);
+        }else {
+            return saveData(wager);
+        }
+    }
+
+    private boolean saveData(Wager wager){
         try{
             JSONObject jsonObject = createJSON(wager);
             Log.d(TAG, "Inserting values");
@@ -107,7 +115,7 @@ public class DailyWagerDbHelper extends SQLiteOpenHelper {
         return true;
     }
 
-    public boolean updateData(Wager wager){
+    private boolean updateData(Wager wager){
         try{
             JSONObject jsonObject = createJSON(wager);
             Log.d(TAG, "Updating values");
@@ -154,13 +162,13 @@ public class DailyWagerDbHelper extends SQLiteOpenHelper {
                 wager.setStartDate(jsonObject.getString(WagerConstants.START_DATE));
                 wager.setRate(Double.parseDouble(jsonObject.getString(WagerConstants.ORIGINAL_RATE)));
 
-                JSONArray daysOfWeekArr = jsonObject.getJSONArray(WagerConstants.DAYS_OF_WEEK);
+                JSONArray daysOfWeekArr = jsonObject.getJSONArray(WagerConstants.EXCLUDED_DAYS_OF_WEEK);
                 if(daysOfWeekArr.length() > 0){
-                    List<DaysOfWeek> daysOfWeek = new ArrayList<>();
+                    List<ExcludedDaysOfWeek> daysOfWeek = new ArrayList<>();
                     for(int j=0; j<daysOfWeekArr.length(); j++){
-                        daysOfWeek.add(DaysOfWeek.valueOf((daysOfWeekArr.getString(j)).toUpperCase()));
+                        daysOfWeek.add(ExcludedDaysOfWeek.getValue(daysOfWeekArr.getInt(j)));
                     }
-                    wager.setDaysOfWeek(daysOfWeek);
+                    wager.setExcludedDaysOfWeeks(daysOfWeek);
                 }
 
                 JSONArray absentDatesArr = jsonObject.getJSONArray(WagerConstants.ABSENT_DATES);
@@ -209,6 +217,37 @@ public class DailyWagerDbHelper extends SQLiteOpenHelper {
         return null;
     }
 
+    public boolean isWagerExists(String wagerId){
+        SQLiteDatabase db = getReadableDatabase();
+
+        Log.d(TAG, "Checking if already exists");
+        String [] projections = {DailyWagerEntry.COLUMN_NAME_WAGER_ID};
+        String whereClause = DailyWagerEntry.COLUMN_NAME_WAGER_ID + "=?";
+        String [] whereArgs = {wagerId};
+
+        Cursor cursor = db.query(DailyWagerEntry.TABLE_NAME, projections, whereClause, whereArgs, null, null, null);
+        //Cursor cursor = db.rawQuery("SECheckFavoriteLECT * FROM "+ RestaurantEntry.TABLE_NAME + " WHERE restaurant_id =" + restaurantId, null);
+
+        cursor.moveToFirst();
+        if(cursor.getCount() == 0){
+            return false;
+        }
+        cursor.close();
+        return true;
+    }
+
+    public boolean deleteWager(String wagerId){
+        SQLiteDatabase db = getReadableDatabase();
+
+        Log.d(TAG, "Checking if already exists");
+        String [] projections = {DailyWagerEntry.COLUMN_NAME_WAGER_ID};
+        String whereClause = DailyWagerEntry.COLUMN_NAME_WAGER_ID + "=?";
+        String [] whereArgs = {wagerId};
+
+        db.delete(DailyWagerEntry.TABLE_NAME, whereClause, whereArgs);
+        return true;
+    }
+
     private JSONObject createJSON(Wager wager) throws JSONException{
         JSONObject jsonObject = new JSONObject();
         jsonObject.put(WagerConstants.ID, wager.getId());
@@ -217,10 +256,10 @@ public class DailyWagerDbHelper extends SQLiteOpenHelper {
         jsonObject.put(WagerConstants.START_DATE, wager.getStartDate());
         jsonObject.put(WagerConstants.CURRENCY, wager.getCurrency());
         JSONArray daysOfWeek = new JSONArray();
-        for(DaysOfWeek day : wager.getDaysOfWeek()){
+        for(ExcludedDaysOfWeek day : wager.getExcludedDaysOfWeeks()){
             daysOfWeek.put(day.getDay());
         }
-        jsonObject.put(WagerConstants.DAYS_OF_WEEK, daysOfWeek);
+        jsonObject.put(WagerConstants.EXCLUDED_DAYS_OF_WEEK, daysOfWeek);
 
         JSONObject changedRateJSON = new JSONObject();
         for (Map.Entry<CalendarDay, Double> entry : wager.getChangedRate().entrySet()) {

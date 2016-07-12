@@ -1,9 +1,7 @@
 package com.rishi.dailywagers.model;
 
 import com.prolificinteractive.materialcalendarview.CalendarDay;
-import com.rishi.dailywagers.constants.DaysOfWeek;
-
-import org.json.JSONObject;
+import com.rishi.dailywagers.constants.ExcludedDaysOfWeek;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,14 +19,14 @@ public class Wager {
     private double rate;
     private String currency;
     private String startDate;
-    private List<DaysOfWeek> daysOfWeek;
+    private List<ExcludedDaysOfWeek> excludedDaysOfWeeks;
     private Map<CalendarDay, Double> changedRate;
     private List<CalendarDay> absentDates;
 
     public Wager(){
         id = UUID.randomUUID();
         currency = "Rs";
-        daysOfWeek = new ArrayList<>();
+        excludedDaysOfWeeks = new ArrayList<>();
         changedRate = new HashMap<>();
         absentDates = new ArrayList<>();
         dueAmount = 0;
@@ -91,12 +89,12 @@ public class Wager {
         this.startDate = startDate;
     }
 
-    public List<DaysOfWeek> getDaysOfWeek() {
-        return daysOfWeek;
+    public List<ExcludedDaysOfWeek> getExcludedDaysOfWeeks() {
+        return excludedDaysOfWeeks;
     }
 
-    public void setDaysOfWeek(List<DaysOfWeek> daysOfWeek) {
-        this.daysOfWeek = daysOfWeek;
+    public void setExcludedDaysOfWeeks(List<ExcludedDaysOfWeek> excludedDaysOfWeeks) {
+        this.excludedDaysOfWeeks = excludedDaysOfWeeks;
     }
 
     public Map<CalendarDay, Double> getChangedRate() {
