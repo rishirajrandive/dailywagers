@@ -113,7 +113,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         mSave.setOnClickListener(this);
         mDatePicker.setOnClickListener(this);
 
-        if(mWager != null){
+        if(!mIsNew){
             populateWagerProfile();
         }
 

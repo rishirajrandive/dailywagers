@@ -138,7 +138,7 @@ public class CheckFragment extends Fragment implements OnDateSelectedListener, O
                 new AbsentDecorator(mWager.getAbsentDates()), new ExcludedDayDecorator(mWager.getExcludedDaysOfWeeks()));
         //mCalendarView.invalidateDecorators();
 
-        //updateAmountForMonth();
+        updateAmountForMonth();
         updateDataForDay();
         return view;
     }
