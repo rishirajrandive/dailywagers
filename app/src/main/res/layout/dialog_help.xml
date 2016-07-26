@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp"
+    android:orientation="vertical" >
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="2">
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="40dp"
+            android:background="@drawable/date_toggle"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/dialog_msg"/>
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:background="@drawable/single_day_present"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/dialog_msg"/>
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="40dp"
+            android:background="@drawable/amount_month"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/dialog_msg"/>
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:background="@drawable/rate_for_day"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/dialog_msg"/>
+    </GridLayout>
+    <Button android:id="@+id/close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Close"
+        android:layout_gravity="center"/>
+</LinearLayout>

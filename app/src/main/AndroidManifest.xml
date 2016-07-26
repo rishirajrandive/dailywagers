@@ -15,6 +15,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".AppIntroduction"
+            android:label="@string/app_intro"
+            android:theme="@style/FullscreenTheme">
+        </activity>
     </application>
+
 
 </manifest>

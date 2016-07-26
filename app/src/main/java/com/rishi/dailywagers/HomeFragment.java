@@ -9,6 +9,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -77,6 +79,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
             CalendarDay currentDate = DateUtil.getCalendarDay(mTodayDate.getText().toString());
             mHomeRecyclerView.setAdapter(new WagerAdapter(mWagerList, getActivity(), getActivity().getSupportFragmentManager(), currentDate));
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.activity_home_menu, menu);
     }
 
     @Override

@@ -50,6 +50,8 @@ public class CheckFragment extends Fragment implements OnDateSelectedListener, O
     public static final String TAG = "CheckFragment";
     public static boolean sDataSaved = false;
 
+    private static final int REQUEST_CONFIRM_OPTION = 0;
+    private static final String DIALOG_HELP = "DialogHelp";
     private static final String ARG_WAGER_ID = "wagerId";
 
     private ProgressDialog mProgressDialog;
@@ -153,6 +155,7 @@ public class CheckFragment extends Fragment implements OnDateSelectedListener, O
     public void onResume() {
         super.onResume();
         Log.d(TAG, "On resume for the app");
+        getActivity().findViewById(R.id.add_new_wager).setVisibility(View.GONE);
     }
 
     @Override
@@ -176,6 +179,13 @@ public class CheckFragment extends Fragment implements OnDateSelectedListener, O
             case R.id.edit_profile:
                 AbstractFragmentActivity.updateFragment(ProfileFragment.getFragment(mWager.getId()), ProfileFragment.TAG, getActivity().getSupportFragmentManager());
                 return true;
+//            case R.id.help_button:
+//                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+//                HelpDialog dialog = HelpDialog.newInstance();
+//                dialog.setTargetFragment(CheckFragment.this, REQUEST_CONFIRM_OPTION);
+//
+//                dialog.show(fragmentManager, DIALOG_HELP);
+//                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -274,10 +284,15 @@ public class CheckFragment extends Fragment implements OnDateSelectedListener, O
     private void updateAmountForMonth(){
         Log.d(TAG, "Updating amount for month");
         int totalDays;
-        if(mToday.getMonth() == mSelectedMonth){
+        if(mToday.getMonth() == mSelectedMonth && mSelectedMonth != DateUtil.getCalendarDay(mWager.getStartDate()).getMonth()){
             totalDays = DateUtil.getDaysUsingEndDate(mToday, mWager.getExcludedDaysOfWeeks());
         }else if(mSelectedMonth == DateUtil.getCalendarDay(mWager.getStartDate()).getMonth()){
-            totalDays = DateUtil.getDaysUsingStartDate(DateUtil.getCalendarDay(mWager.getStartDate()), mWager.getExcludedDaysOfWeeks());
+            if(mToday.getMonth() == DateUtil.getCalendarDay(mWager.getStartDate()).getMonth()){
+                totalDays = DateUtil.getDays(DateUtil.getCalendarDay(mWager.getStartDate()), mToday, mWager.getExcludedDaysOfWeeks());
+            }else {
+                totalDays = DateUtil.getDaysUsingStartDate(DateUtil.getCalendarDay(mWager.getStartDate()), mWager.getExcludedDaysOfWeeks());
+            }
+
         }else {
             totalDays = DateUtil.getDaysInMonth(mSelectedMonth, mWager.getExcludedDaysOfWeeks());
         }

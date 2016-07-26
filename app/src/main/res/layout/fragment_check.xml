@@ -10,27 +10,44 @@
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin">
-        <Switch
-            android:id="@+id/date_select_switch"
-            android:layout_width="wrap_content"
+        <LinearLayout android:id="@+id/date_and_attendance"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:checked="false"
-            android:text="@string/date_range_msg"/>
+            android:orientation="horizontal">
+            <Switch
+                android:id="@+id/date_select_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:layout_marginRight="2dp"
+                android:text="@string/date_range_msg"/>
+            <CheckBox android:id="@+id/day_attendance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="Present?"/>
+            <CheckBox android:id="@+id/range_attendance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:visibility="gone"
+                android:text="Present for range of dates?"/>
+        </LinearLayout>
+
         <com.prolificinteractive.materialcalendarview.MaterialCalendarView
             android:id="@+id/calendarView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:mcv_showOtherDates="all"
             app:mcv_selectionColor="#00F"
-            android:padding="5dp"
-            android:layout_below="@id/date_select_switch"/>
+            android:padding="2dp"
+            android:layout_below="@id/date_and_attendance"/>
         <LinearLayout android:id="@+id/amount_section"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_below="@id/calendarView"
-            android:paddingTop="30dp"
+            android:paddingTop="7dp"
             android:gravity="left">
             <TextView
                 android:layout_width="wrap_content"
@@ -48,7 +65,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_below="@id/amount_section"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="4dp"
             android:gravity="left">
             <TextView
                 android:layout_width="wrap_content"
@@ -79,25 +96,13 @@
                 android:visibility="gone"
                 android:background="@drawable/clear_black"/>
         </LinearLayout>
-        <CheckBox android:id="@+id/day_attendance"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:layout_below="@id/rate_section"
-            android:text="Present?"/>
-        <CheckBox android:id="@+id/range_attendance"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:visibility="gone"
-            android:layout_below="@id/day_attendance"
-            android:text="Present for range of dates?"/>
+
         <Button android:id="@+id/save_changes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Save"
             android:visibility="gone"
             android:background="@color/colorPrimary"
-            android:layout_below="@id/range_attendance"/>
+            android:layout_below="@id/rate_section"/>
     </RelativeLayout>
 </ScrollView>

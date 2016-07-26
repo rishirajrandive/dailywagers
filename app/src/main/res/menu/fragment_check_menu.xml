@@ -5,4 +5,8 @@
         android:title="Edit"
         android:icon="@drawable/edit_profle"
         app:showAsAction="ifRoom"/>
+    <!--<item android:id="@+id/help_button"-->
+        <!--android:title="Help"-->
+        <!--android:icon="@drawable/help_button"-->
+        <!--app:showAsAction="ifRoom"/>-->
 </menu>
