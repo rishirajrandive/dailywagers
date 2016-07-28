@@ -1,6 +1,7 @@
 package com.rishi.dailywagers.constants;
 
 /**
+ * All the string constants used int the app are here.
  * Created by rishi on 6/28/16.
  */
 public class WagerConstants {

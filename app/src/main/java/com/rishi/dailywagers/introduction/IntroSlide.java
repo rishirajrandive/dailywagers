@@ -1,4 +1,4 @@
-package com.rishi.dailywagers;
+package com.rishi.dailywagers.introduction;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,13 +8,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 /**
+ * Intro slide acting as base for all the layouts
  * Created by rishi on 7/25/16.
  */
-public class FirstSlide extends Fragment {
+public class IntroSlide extends Fragment {
     private static final String ARG_LAYOUT_RES_ID = "layoutResId";
 
-    public static FirstSlide newInstance(int layoutResId) {
-        FirstSlide sampleSlide = new FirstSlide();
+    public static IntroSlide newInstance(int layoutResId) {
+        IntroSlide sampleSlide = new IntroSlide();
 
         Bundle args = new Bundle();
         args.putInt(ARG_LAYOUT_RES_ID, layoutResId);
@@ -25,7 +26,7 @@ public class FirstSlide extends Fragment {
 
     private int layoutResId;
 
-    public FirstSlide() {}
+    public IntroSlide() {}
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

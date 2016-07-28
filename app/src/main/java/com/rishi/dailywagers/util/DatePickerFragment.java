@@ -13,6 +13,7 @@ import android.widget.DatePicker;
 import java.util.Calendar;
 
 /**
+ * Date picker dialog for the app
  * Created by rishi on 6/29/16.
  */
 @SuppressLint("ValidFragment")
@@ -21,6 +22,12 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
     private static Context sContext;
     private static IDatePickerDialogListener sListener;
 
+    /**
+     * Returns the instance
+     * @param context
+     * @param titleResource
+     * @return
+     */
     public static DatePickerFragment newInstance(Context context, int titleResource){
         DatePickerFragment dialog  = new DatePickerFragment();
         sContext = context;
@@ -49,6 +56,10 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
         sListener.setDate(year, monthOfYear, dayOfMonth);
     }
 
+    /**
+     * Method to set the listener to be called once date is set
+     * @param listener
+     */
     public void setDatePickerDialogListener(IDatePickerDialogListener listener){
         sListener = listener;
     }

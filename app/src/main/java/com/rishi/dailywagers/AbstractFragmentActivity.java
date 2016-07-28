@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 
 /**
+ * Sets the fragment in the frame layout provided
  * Created by rishi on 6/24/16.
  */
 public abstract class AbstractFragmentActivity extends AppCompatActivity {
@@ -27,6 +28,12 @@ public abstract class AbstractFragmentActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Updates the fragment with new
+     * @param fragment
+     * @param fragmentTag
+     * @param supportFragmentManager
+     */
     public static void updateFragment(Fragment fragment, String fragmentTag, FragmentManager supportFragmentManager){
         if (fragment != null) {
             FragmentManager fragmentManager = supportFragmentManager;

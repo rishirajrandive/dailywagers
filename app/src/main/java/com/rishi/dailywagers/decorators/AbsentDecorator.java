@@ -11,6 +11,8 @@ import com.prolificinteractive.materialcalendarview.DayViewFacade;
 import java.util.List;
 
 /**
+ * Decorator class from library {@link com.prolificinteractive.materialcalendarview.DayViewDecorator}
+ * to add color to absent days.
  * Created by rishi on 6/27/16.
  */
 public class AbsentDecorator implements DayViewDecorator {

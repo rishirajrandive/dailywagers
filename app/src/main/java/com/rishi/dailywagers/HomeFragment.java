@@ -26,6 +26,7 @@ import com.rishi.dailywagers.util.IDatePickerDialogListener;
 import java.util.List;
 
 /**
+ * Home page for the app
  * Created by rishi on 6/24/16.
  */
 public class HomeFragment extends Fragment implements View.OnClickListener{
@@ -39,12 +40,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
     //private FloatingActionButton mAddNew;
     private TextView mNoItemsMessage;
     private List<Wager> mWagerList;
+    private DailyWagerDbHelper mWagerDbHelper;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         setHasOptionsMenu(true);
+        mWagerDbHelper = DailyWagerDbHelper.getInstance(getContext());
         Log.d(TAG, "On create");
     }
 
@@ -73,6 +76,15 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().findViewById(R.id.add_new_wager).setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Sets up list of wagers/person to the app
+     */
     private void setupAdapter(){
         if(isAdded()){
             Log.d(TAG, "Setting up adapter for view");
@@ -110,16 +122,20 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
 
     }
 
+    /**
+     * Async task for fetching all the wagers
+     */
     private class FetchWagers extends AsyncTask<Void, Void, List<Wager>>{
         @Override
         protected List<Wager> doInBackground(Void... params) {
-            return DailyWagerDbHelper.getInstance(getContext()).fetchWagers();
+            return mWagerDbHelper.fetchWagers();
         }
 
         @Override
         protected void onPostExecute(List<Wager> wagers) {
             super.onPostExecute(wagers);
-            if(wagers != null){
+            Log.d(TAG, "Wager is "+ wagers);
+            if(wagers != null && wagers.size() > 0){
                 mWagerList = wagers;
                 setupAdapter();
                 mNoItemsMessage.setVisibility(View.GONE);

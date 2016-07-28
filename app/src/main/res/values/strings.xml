@@ -1,33 +1,51 @@
 <resources>
     <string name="app_name">Daily Wagers</string>
-    <string name="today">Today</string>
 
+    <!-- Home page strings -->
+    <string name="person_name">Person Name</string>
+    <string name="no_wager_msg">No wagers!, please click button below to add</string>
+    <string name="dummy_date">26 April 1990</string>
+
+    <!-- Person/Wager profile strings -->
     <string name="error_message">Cannot be left blank</string>
-    <string name="date_picker_title">Select date</string>
-    <string name="dialog_msg">All the data for wager will be deleted.</string>
-    <string name="dialog_title">Are you sure?</string>
-
-    <string name="help_title">Help</string>
-    <string name="check_help"></string>
-
-    <string name="date_range_msg">Allow custom date range:</string>
-    <string name="amount_for_month_label">Amount for current month:</string>
-    <string name="rate_for_the_day">Rate for the day:</string>
-
     <string name="profile_msg">Please fill in details:</string>
     <string name="wager_name">Name</string>
-    <string name="wager_rate">Rate</string>
-    <string name="start_date">dd-mm-yyyy</string>
+    <string name="wager_rate">Charge per day</string>
+    <string name="start_date">Start date in dd MMM yyyy</string>
     <string name="days_of_week">Days of week</string>
     <string name="save_button">Save</string>
 
+    <!-- Date select dialog -->
+    <string name="date_picker_title">Select date</string>
+
+    <!-- Confirmation dialog strings -->
+    <string name="dialog_msg">All the data for wager will be deleted.</string>
+    <string name="dialog_title">Are you sure?</string>
+    <string name="dialog_yes">Yes</string>
+    <string name="dialog_no">No</string>
+
+    <!-- Person/Wager check strings -->
+    <string name="date_range_msg">Select date range:</string>
+    <string name="present_text">Present?</string>
+    <string name="range_present_text">Present for range of dates?</string>
+    <string name="dummy_value">0</string>
+    <string name="amount_for_month_label">Amount for current month:</string>
+    <string name="amount_for_date_range">Amount for date range:</string>
+    <string name="rate_for_the_day">Charge for the day:</string>
+    <string name="save_btn_text">Save</string>
+
+    <!-- App introduction strings -->
     <string name="app_intro">Introduction</string>
-    <string name="zero_title">Add Track Manage</string>
-    <string name="zero_text">People providing daily service to youEasy way to </string>
+    <string name="zero_title">Add. Record. Check</string>
+    <string name="zero_first_text">Want to record your daily maid\'s attendance?\n Or check total amount due for milkman?</string>
+    <string name="zero_text">Add her profile, record her attendance and check amount for month or date range.</string>
     <string name="home_title">Your home page</string>
-    <string name="home_text">Shows list of people you added. Un-check to mark absent for date selected. Click to add new person.</string>
+    <string name="home_text">Shows list of people you added.\n Un-check to mark absent for date.\n Click to add new person.</string>
     <string name="check_title">Check all the details</string>
-    <string name="check_text">See amount for current month. Change rate for the day. Toggle date selection mode. Mark absent for the day or range of days</string>
+    <string name="check_text_first">See amount for current month.\n Change rate for the day.</string>
+    <string name="check_text">Toggle date selection mode.\n Mark absent for the day or range of days</string>
     <string name="profile_title">Create profile</string>
-    <string name="profile_text">Add the person here, specify rate per day, start date and days of week availability</string>
+    <string name="profile_text">Add the person, specify charge per day, start date and days of week availability</string>
+    <string name="general_title">Get started</string>
+    <string name="general_text">You can always see the tutorial, find the icon on home page.\n\n Let\'s begin by adding new person!!!.</string>
 </resources>

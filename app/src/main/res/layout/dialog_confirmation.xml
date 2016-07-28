@@ -16,11 +16,11 @@
         <Button android:id="@+id/cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="No"/>
+            android:text="@string/dialog_no"/>
         <Button android:id="@+id/confirm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
-            android:text="Yes"/>
+            android:text="@string/dialog_yes"/>
     </LinearLayout>
 </LinearLayout>

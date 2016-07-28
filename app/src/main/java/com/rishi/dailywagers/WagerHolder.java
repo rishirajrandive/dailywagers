@@ -1,11 +1,15 @@
 package com.rishi.dailywagers;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.AsyncTask;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.inputmethod.CorrectionInfo;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,6 +22,7 @@ import com.rishi.dailywagers.util.DateUtil;
 import java.util.List;
 
 /**
+ * Holder for the wager
  * Created by rishi on 6/26/16.
  */
 public class WagerHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -95,10 +100,13 @@ public class WagerHolder extends RecyclerView.ViewHolder implements View.OnClick
         @Override
         protected void onPostExecute(Boolean aBoolean) {
             super.onPostExecute(aBoolean);
+            CoordinatorLayout coordinatorLayout = (CoordinatorLayout) mActivity.findViewById(R.id.coordinatelayout);
             if(aBoolean){
-                Toast.makeText(mActivity, "Data updated successfully", Toast.LENGTH_SHORT).show();
+                Snackbar.make(coordinatorLayout, "Attendance updated", Snackbar.LENGTH_LONG)
+                        .show();
             }else {
-                Toast.makeText(mActivity, "Something went wrong...", Toast.LENGTH_SHORT).show();
+                Snackbar.make(coordinatorLayout, "Oops! something went wrong", Snackbar.LENGTH_LONG)
+                        .show();
             }
         }
     }

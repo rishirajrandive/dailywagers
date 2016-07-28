@@ -18,26 +18,26 @@
                 android:layout_height="wrap_content"
                 android:textStyle="bold"
                 android:textSize="20dp"
-                android:text="Hello"
+                android:text="@string/person_name"
                 android:paddingLeft="5dp"
                 android:paddingTop="10dp"/>
             <TextView android:id="@+id/display_start_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="16dp"
-                android:text="Start date: "
+                android:text="@string/start_date"
                 android:paddingLeft="5dp"/>
             <TextView android:id="@+id/charge_for_day"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="16dp"
-                android:text="Charge for a day: 10"
+                android:text="@string/rate_for_the_day"
                 android:paddingLeft="5dp"/>
         </LinearLayout>
         <CheckBox android:id="@+id/current_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checked="true"
-            android:text="Present"/>
+            android:text="@string/present_text"/>
     </LinearLayout>
 </LinearLayout>

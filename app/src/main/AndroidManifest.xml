@@ -16,7 +16,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".AppIntroduction"
+            android:name=".introduction.AppIntroduction"
             android:label="@string/app_intro"
             android:theme="@style/FullscreenTheme">
         </activity>

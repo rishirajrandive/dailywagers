@@ -13,6 +13,7 @@ import com.rishi.dailywagers.model.Wager;
 import java.util.List;
 
 /**
+ * Adapter to hold the list of wagers
  * Created by rishi on 6/26/16.
  */
 public class WagerAdapter extends RecyclerView.Adapter<WagerHolder> {
@@ -22,6 +23,13 @@ public class WagerAdapter extends RecyclerView.Adapter<WagerHolder> {
     private List<Wager> mWagerList;
     private CalendarDay mCurrentDate;
 
+    /**
+     * Constructor with relevant objects
+     * @param wagerList
+     * @param activity
+     * @param fragmentManager
+     * @param currentDate
+     */
     public WagerAdapter(List<Wager> wagerList, Activity activity, FragmentManager fragmentManager, CalendarDay currentDate){
         mWagerList = wagerList;
         mActivity = activity;

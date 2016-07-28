@@ -1,19 +1,25 @@
 package com.rishi.dailywagers;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
+import com.rishi.dailywagers.introduction.AppIntroduction;
 
+/**
+ * Home page for the app
+ */
 public class HomeActivity extends AbstractFragmentActivity implements View.OnClickListener{
 
     private final static String TAG = "HomeActivity";
+    public final static String SLIDE_SHOW = "slide_show";
     private MaterialCalendarView mCalendarView;
     private FloatingActionButton mAddNew;
 
@@ -29,13 +35,10 @@ public class HomeActivity extends AbstractFragmentActivity implements View.OnCli
         mAddNew = (FloatingActionButton) findViewById(R.id.add_new_wager);
         mAddNew.setVisibility(View.VISIBLE);
         mAddNew.setOnClickListener(this);
-    }
 
-    @Override
-    protected void onResume() {
-        Log.d(TAG, "Resume called for HomeActivity");
-        super.onResume();
-        mAddNew.setVisibility(View.VISIBLE);
+        if(!isIntroDone()){
+            startIntroduction();
+        }
     }
 
     @Override
@@ -67,8 +70,7 @@ public class HomeActivity extends AbstractFragmentActivity implements View.OnCli
                 return true;
             case R.id.slide_show:
                 Log.d(TAG, "Slide show requested");
-                Intent intent = new Intent(this, AppIntroduction.class);
-                startActivity(intent);
+                startIntroduction();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -80,5 +82,23 @@ public class HomeActivity extends AbstractFragmentActivity implements View.OnCli
         Log.d(TAG, "Floating action button pressed");
         mAddNew.setVisibility(View.GONE);
         AbstractFragmentActivity.updateFragment(new ProfileFragment(), ProfileFragment.TAG, getSupportFragmentManager());
+    }
+
+    /**
+     * Starts the introduction screens
+     */
+    private void startIntroduction(){
+        Intent intent = new Intent(this, AppIntroduction.class);
+        startActivity(intent);
+        finish();
+    }
+
+    /**
+     * Checks if introduction done
+     * @return
+     */
+    private boolean isIntroDone(){
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        return preferences.getBoolean(SLIDE_SHOW, false);
     }
 }

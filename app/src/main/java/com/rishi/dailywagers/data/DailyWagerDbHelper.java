@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
+ * Handles database operations and acts as helper class by providing easy
+ * functions related to user/wager information
  * Created by rishi on 6/26/16.
  */
 public class DailyWagerDbHelper extends SQLiteOpenHelper {
@@ -79,6 +81,11 @@ public class DailyWagerDbHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     }
 
+    /**
+     * Checks if wager id exists to decide on updating or saving the data.
+     * @param wager
+     * @return
+     */
     public boolean saveWager(Wager wager){
         if(isWagerExists(wager.getId().toString())){
             return updateData(wager);
@@ -87,6 +94,11 @@ public class DailyWagerDbHelper extends SQLiteOpenHelper {
         }
     }
 
+    /**
+     * Saves data for new wager.
+     * @param wager
+     * @return
+     */
     private boolean saveData(Wager wager){
         try{
             JSONObject jsonObject = createJSON(wager);
@@ -115,6 +127,11 @@ public class DailyWagerDbHelper extends SQLiteOpenHelper {
         return true;
     }
 
+    /**
+     * Updates existing wager with new information
+     * @param wager
+     * @return
+     */
     private boolean updateData(Wager wager){
         try{
             JSONObject jsonObject = createJSON(wager);
@@ -146,6 +163,10 @@ public class DailyWagerDbHelper extends SQLiteOpenHelper {
         return true;
     }
 
+    /**
+     * Gets all the wagers for display
+     * @return
+     */
     public List<Wager> fetchWagers(){
         Log.d(TAG, "Fetching all the favorites");
         mWagerList = new ArrayList<>();
@@ -208,6 +229,11 @@ public class DailyWagerDbHelper extends SQLiteOpenHelper {
         return mWagerList;
     }
 
+    /**
+     * Returns wager with provided wager Id
+     * @param wagerId
+     * @return
+     */
     public Wager getCurrentWager(UUID wagerId){
         for(Wager wager: mWagerList){
             if(wager.getId().equals(wagerId)){
@@ -217,6 +243,11 @@ public class DailyWagerDbHelper extends SQLiteOpenHelper {
         return null;
     }
 
+    /**
+     * Checks if wager exists to decide on updating or saving new.
+     * @param wagerId
+     * @return
+     */
     public boolean isWagerExists(String wagerId){
         SQLiteDatabase db = getReadableDatabase();
 
@@ -236,6 +267,11 @@ public class DailyWagerDbHelper extends SQLiteOpenHelper {
         return true;
     }
 
+    /**
+     * Removes wager entry for the wager Id
+     * @param wagerId
+     * @return
+     */
     public boolean deleteWager(String wagerId){
         SQLiteDatabase db = getReadableDatabase();
 
@@ -248,6 +284,12 @@ public class DailyWagerDbHelper extends SQLiteOpenHelper {
         return true;
     }
 
+    /**
+     * Helper method to create the JSON to save in the DB
+     * @param wager
+     * @return
+     * @throws JSONException
+     */
     private JSONObject createJSON(Wager wager) throws JSONException{
         JSONObject jsonObject = new JSONObject();
         jsonObject.put(WagerConstants.ID, wager.getId());

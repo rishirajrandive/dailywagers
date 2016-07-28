@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 
 /**
+ * Shows the confirm dialog while deleting the user/wager.
  * Created by rishi on 7/11/16.
  */
 public class ConfirmDialog extends DialogFragment {
@@ -20,6 +21,10 @@ public class ConfirmDialog extends DialogFragment {
     private static final int CANCEL = 0;
     private static final int CONFIRM = 1;
 
+    /**
+     * Returns new instance
+     * @return
+     */
     public static ConfirmDialog newInstance() {
         ConfirmDialog fragment = new ConfirmDialog();
         return fragment;

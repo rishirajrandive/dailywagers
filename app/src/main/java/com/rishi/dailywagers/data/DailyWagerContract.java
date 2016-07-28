@@ -3,6 +3,7 @@ package com.rishi.dailywagers.data;
 import android.provider.BaseColumns;
 
 /**
+ * Table detail information
  * Created by rishi on 6/26/16.
  */
 public class DailyWagerContract {

@@ -14,6 +14,8 @@ import com.prolificinteractive.materialcalendarview.DayViewFacade;
 import java.util.Date;
 
 /**
+ * Decorator class from library {@link com.prolificinteractive.materialcalendarview.DayViewDecorator}
+ * to add color to today.
  * Created by rishi on 6/27/16.
  */
 public class TodayDecorator implements DayViewDecorator {

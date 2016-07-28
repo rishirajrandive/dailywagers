@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
+ * Shows the profile for the user/wager
  * Created by rishi on 6/24/16.
  */
 public class ProfileFragment extends Fragment implements View.OnClickListener {
@@ -59,6 +60,11 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     private Wager mWager;
     private List<ExcludedDaysOfWeek> mExcludedDaysOfWeeks;
 
+    /**
+     * Returns the fragment
+     * @param wagerId
+     * @return
+     */
     public static ProfileFragment getFragment(UUID wagerId){
         ProfileFragment fragment = new ProfileFragment();
         Bundle bundle = new Bundle();
@@ -196,6 +202,10 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    /**
+     * Checks if all details for wager/person are filled
+     * @return
+     */
     private boolean isValid(){
         if(TextUtils.isEmpty(mWagerName.getText())){
             mWagerName.setError(getString(R.string.error_message));
@@ -216,6 +226,10 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         return true;
     }
 
+    /**
+     * Checks if days of week are valid
+     * @return
+     */
     private boolean isValidDaysOfWeek(){
         mExcludedDaysOfWeeks = new ArrayList<>();
         if(!mSunday.isChecked()){
@@ -245,6 +259,9 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         return true;
     }
 
+    /**
+     * If wager/person already present populate its info the app
+     */
     private void populateWagerProfile(){
         mWagerName.setText(mWager.getName());
         mWagerRate.setText(mWager.getRate()+"");
@@ -277,6 +294,9 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    /**
+     * Add wager information to wager object
+     */
     private void populateWagerData(){
         mWager.setName(mWagerName.getText().toString());
         mWager.setRate(Double.parseDouble(mWagerRate.getText().toString()));
@@ -284,6 +304,9 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         mWager.setExcludedDaysOfWeeks(mExcludedDaysOfWeeks);
     }
 
+    /**
+     * Async task to save the profile to DB
+     */
     private class SaveProfile extends AsyncTask<Void, Void, Boolean>{
         @Override
         protected Boolean doInBackground(Void... params) {
@@ -295,6 +318,10 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             super.onPostExecute(aBoolean);
             if(aBoolean){
                 getActivity().getSupportFragmentManager().popBackStack();
+                if(!mIsNew){
+                    getActivity().getSupportFragmentManager().popBackStack();
+                }
+
             }else{
                 Toast.makeText(getActivity(), "Something went wrong...", Toast.LENGTH_LONG).show();
             }

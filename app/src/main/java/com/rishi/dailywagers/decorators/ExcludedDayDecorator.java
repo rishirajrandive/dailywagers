@@ -14,6 +14,8 @@ import java.util.Calendar;
 import java.util.List;
 
 /**
+ * Decorator class from library {@link com.prolificinteractive.materialcalendarview.DayViewDecorator}
+ * to add color to excluded days.
  * Created by rishi on 6/27/16.
  */
 public class ExcludedDayDecorator implements DayViewDecorator {

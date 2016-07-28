@@ -4,5 +4,6 @@
     <color name="colorPrimaryDark">#00796B</color>
     <color name="colorAccent">#FF6E40</color>
     <color name="white">#FFFFFF</color>
-    <color name="selected_day">#76ff03</color>
+    <color name="present_color">#00C853</color>
+    <color name="absent_color">#ff3300</color>
 </resources>
