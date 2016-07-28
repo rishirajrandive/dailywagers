@@ -18,7 +18,7 @@ Android app to keep record of daily wagers such as maid, milkman or news paper g
 
 <b> App introduction.</b><br>
 <br>
-<img height="700" src="https://raw.githubusercontent.com/rishirajrandive/dailywagers/master/images/appintro.gif”/>
+<img height="700" src="https://raw.githubusercontent.com/rishirajrandive/dailywagers/master/images/appintro.gif" alt="Intro screen capture"/>
 </br>
 
 <b> Home page for the app </b><br>
