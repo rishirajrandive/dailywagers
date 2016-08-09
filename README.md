@@ -1,6 +1,8 @@
 # dailywagers
 Android app to keep record of daily wagers such as maid, milkman or news paper guy.
 
+Download the app at: https://play.google.com/store/apps/details?id=com.rishi.dailywagers
+<br>
 <b> Working </b><br><br>
 1. Click the Floating action button on home page to add new profile. <br>
 2. Fill relevant details, where charge for the day would be amount you need to pay the person per day.<br>
@@ -36,4 +38,6 @@ Android app to keep record of daily wagers such as maid, milkman or news paper g
 <img height="700" src="https://raw.githubusercontent.com/rishirajrandive/dailywagers/master/images/user_check.png"/>
 </br>
 <br>
+
+[Click](https://www.youtube.com/watch?v=d9lmeq8Gskc&feature=youtu.be) to see the demo
 
