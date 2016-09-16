@@ -65,16 +65,7 @@ public class WagerHolder extends RecyclerView.ViewHolder implements View.OnClick
             mWager.setAbsentDates(absentDate);
             new UpdateAttendance().execute();
         }else {
-            Fragment fragment =  CheckFragment.newInstance(mWager.getId());
-            if (fragment != null) {
-                if(mFragmentManager.findFragmentByTag(CheckFragment.TAG) == null){
-                    mFragmentManager.beginTransaction()
-                            .replace(R.id.fragment_layout, fragment, CheckFragment.TAG).addToBackStack(CheckFragment.TAG).commit();
-                }else {
-                    mFragmentManager.beginTransaction()
-                            .replace(R.id.fragment_layout, fragment, CheckFragment.TAG).commit();
-                }
-            }
+            AbstractFragmentActivity.updateFragment(CheckFragment.newInstance(mWager.getId()), CheckFragment.TAG, mFragmentManager);
         }
     }
 
