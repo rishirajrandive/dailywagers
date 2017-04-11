@@ -48,4 +48,7 @@ captures/
 
 # Keystore files
 *.jks
+
+# For Jekyll website
+_site/
 >>>>>>> ef5440bfc75ed4957169d5813c4c7dff921411da
