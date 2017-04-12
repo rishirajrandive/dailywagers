@@ -1,43 +1,42 @@
 # dailywagers
 Android app to keep record of daily wagers such as maid, milkman or news paper guy.
-
-Download the app at: https://play.google.com/store/apps/details?id=com.rishi.dailywagers
-<br>
-<b> Working </b><br><br>
-1. Click the Floating action button on home page to add new profile. <br>
-2. Fill relevant details, where charge for the day would be amount you need to pay the person per day.<br>
-3. On home page, you see list of daily wagers you added. Click on check box to mark any one absent for date shown.<br>
-4. Click on the person to get the detailed view.<br>
-5. Change charge for the day or mark absent for range of days.<br>
+Published on [Google playstore](https://play.google.com/store/apps/details?id=com.rishi.dailywagers)
 
 
-<b> Android and other features used in app </b><br><br>
-1. Used library for [Material Calendar View](https://github.com/prolificinteractive/material-calendarview).<br>
-2. Used library [AppIntro](https://github.com/PaoloRotolo/AppIntro) to add the introduction for the app.<br>
+## Working
+* Click the Floating action button on home page to add new profile.
+* Fill relevant details, where charge for the day would be amount you need to pay the person per day.
+* On home page, you see list of daily wagers you added. Click on check box to mark any one absent for date shown.
+* Click on the person to get the detailed view.
+* Change charge for the day or mark absent for range of days.
 
 
-<b> Below are few screen shots of the application </b><br><br>
+## Build with
+* [Android SDK](https://developer.android.com/studio/index.html) - used Android Studio for development
+* [Material Calendar View](https://github.com/prolificinteractive/material-calendarview) - used to fancy calendar display.
+* [AppIntro](https://github.com/PaoloRotolo/AppIntro)- used this library to add the introduction for the app.
 
-<b> App introduction </b><br>
-<br>
-<img height="700" src="https://raw.githubusercontent.com/rishirajrandive/dailywagers/master/images/appintro.gif" alt="Intro screen capture"/>
-</br>
 
-<b> Home page for the app </b><br>
-<br>
-<img height="700" src="https://raw.githubusercontent.com/rishirajrandive/dailywagers/master/images/home_page.png"/>
-</br>
+### Screen shots of app in action
 
-<b> Adding person profile </b><br>
-<br>
-<img height="700" src="https://raw.githubusercontent.com/rishirajrandive/dailywagers/master/images/user_profile.png"/>
-</br>
+* App introduction
 
-<b> Check person details </b><br>
-<br>
-<img height="700" src="https://raw.githubusercontent.com/rishirajrandive/dailywagers/master/images/user_check.png"/>
-</br>
-<br>
+<img width="300" height="400" src="https://raw.githubusercontent.com/rishirajrandive/dailywagers/master/images/appintro.gif" alt="Intro screen capture"/>
 
-[Click](https://www.youtube.com/watch?v=d9lmeq8Gskc&feature=youtu.be) to see the demo
+* Home page for the app
+
+<img width="300" height="400" src="https://raw.githubusercontent.com/rishirajrandive/dailywagers/master/images/home_page.png"/>
+
+
+* Adding person profile
+
+<img width="300" height="400" src="https://raw.githubusercontent.com/rishirajrandive/dailywagers/master/images/user_profile.png"/>
+
+
+* Check person details
+
+<img width="300" height="400" src="https://raw.githubusercontent.com/rishirajrandive/dailywagers/master/images/user_check.png"/>
+
+
+[Click here](https://www.youtube.com/watch?v=d9lmeq8Gskc&feature=youtu.be) to see the demo
 
