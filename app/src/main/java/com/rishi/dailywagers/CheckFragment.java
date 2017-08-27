@@ -1,14 +1,12 @@
 package com.rishi.dailywagers;
 
 import android.app.ProgressDialog;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,9 +23,9 @@ import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import com.prolificinteractive.materialcalendarview.CalendarDay;
+import com.prolificinteractive.materialcalendarview.CalendarMode;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 import com.prolificinteractive.materialcalendarview.OnMonthChangedListener;
@@ -39,8 +37,6 @@ import com.rishi.dailywagers.decorators.TodayDecorator;
 import com.rishi.dailywagers.decorators.WeekendDecorator;
 import com.rishi.dailywagers.model.Wager;
 import com.rishi.dailywagers.util.DateUtil;
-
-import org.w3c.dom.Text;
 
 import java.util.Calendar;
 import java.util.List;
@@ -105,6 +101,9 @@ public class CheckFragment extends Fragment implements OnDateSelectedListener, O
         UUID wagerId = (UUID) getArguments().getSerializable(ARG_WAGER_ID);
         mWager = DailyWagerDbHelper.getInstance(getContext()).getCurrentWager(wagerId);
         mToday = DateUtil.getCalendarDay(DateUtil.getCurrentDisplayDate());
+        if(mToday == null){
+            return;
+        }
         mSelectedDay = mToday;
         mSelectedMonth = mToday.getMonth();
 
@@ -117,9 +116,11 @@ public class CheckFragment extends Fragment implements OnDateSelectedListener, O
         Log.d(TAG, "On create view");
         View view = inflater.inflate(R.layout.fragment_check, container, false);
 
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(mWager.getName());
+        if(((AppCompatActivity)getActivity()).getSupportActionBar() != null){
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(mWager.getName());
+        }
 
         getActivity().findViewById(R.id.add_new_wager).setVisibility(View.GONE);
         mFragmentCheck = (ScrollView) view.findViewById(R.id.fragment_check);
@@ -138,7 +139,11 @@ public class CheckFragment extends Fragment implements OnDateSelectedListener, O
         mCalendarView.setOnDateChangedListener(this);
         mCalendarView.setOnRangeSelectedListener(this);
         mCalendarView.setOnMonthChangedListener(this);
-        mCalendarView.state().edit().setMinimumDate(DateUtil.getCalendarDay(mWager.getStartDate())).setMaximumDate(mSelectedDay).commit();
+        mCalendarView.state().edit()
+                .setMinimumDate(DateUtil.getCalendarDay(mWager.getStartDate()))
+                .setMaximumDate(mSelectedDay)
+                .setCalendarDisplayMode(CalendarMode.MONTHS)
+                .commit();
 
         mRateEditStart.setOnClickListener(this);
         mRateEditDone.setOnClickListener(this);
@@ -209,6 +214,7 @@ public class CheckFragment extends Fragment implements OnDateSelectedListener, O
         //TODO Show amount for the selected dates
         mSelectedDay = date;
         updateDataForDay();
+        toggleRateEditStart(mWager.getAbsentDates().indexOf(mSelectedDay) == -1);
     }
 
     @Override
@@ -305,11 +311,11 @@ public class CheckFragment extends Fragment implements OnDateSelectedListener, O
         Log.d(TAG, "Updating amount for month");
         int totalDays;
         CalendarDay profileStartDate = DateUtil.getCalendarDay(mWager.getStartDate());
-        if(mToday.getMonth() == mSelectedMonth && profileStartDate.getMonth() == mSelectedMonth){
+        if(mToday.getMonth() == mSelectedMonth && profileStartDate != null && profileStartDate.getMonth() == mSelectedMonth){
             totalDays = DateUtil.getDays(profileStartDate, mToday, mWager.getExcludedDaysOfWeeks());
         }else if(mToday.getMonth() == mSelectedMonth){
             totalDays = DateUtil.getDays(DateUtil.getMonthStartDate(mToday), mToday, mWager.getExcludedDaysOfWeeks());
-        }else if(mSelectedMonth == profileStartDate.getMonth()){
+        }else if(profileStartDate != null && mSelectedMonth == profileStartDate.getMonth()){
             totalDays = DateUtil.getDays(profileStartDate, DateUtil.getMonthEndDate(profileStartDate), mWager.getExcludedDaysOfWeeks());
         }else {
             totalDays = DateUtil.getDaysInMonth(mSelectedMonth, mWager.getExcludedDaysOfWeeks());
@@ -410,19 +416,27 @@ public class CheckFragment extends Fragment implements OnDateSelectedListener, O
             mDueMonthAmount.setText(R.string.dummy_value);
             mCalendarView.setSelectionMode(MaterialCalendarView.SELECTION_MODE_RANGE);
 
-            mRateEditStart.setVisibility(View.GONE);
-            Toast.makeText(getContext(), "Select your date range", Toast.LENGTH_LONG);
+            toggleRateEditStart(false);
+            Toast.makeText(getContext(), "Select your date range", Toast.LENGTH_LONG).show();
 
         }else {
             mAmountLabel.setText(R.string.amount_for_month_label);
             updateAmountForMonth();
             mCalendarView.setSelectionMode(MaterialCalendarView.SELECTION_MODE_SINGLE);
+            mCalendarView.setSelectedDate(mSelectedDay);
+            toggleRateEditStart(true);
+        }
+        toggleSaveButton(false);
+    }
 
+    private void toggleRateEditStart(boolean isShow){
+        if(isShow){
             mRateEditStart.setVisibility(View.VISIBLE);
+        }else {
+            mRateEditStart.setVisibility(View.GONE);
         }
         mRateEditDone.setVisibility(View.GONE);
         mRateEditCancel.setVisibility(View.GONE);
-        toggleSaveButton(false);
     }
 
     /**

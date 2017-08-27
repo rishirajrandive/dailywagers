@@ -52,6 +52,9 @@ public class WagerAdapter extends RecyclerView.Adapter<WagerHolder> {
 
     @Override
     public int getItemCount() {
+        if(mWagerList == null){
+            return 0;
+        }
         return mWagerList.size();
     }
 }
